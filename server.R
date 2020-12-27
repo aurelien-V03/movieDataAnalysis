@@ -8,6 +8,7 @@ shinyServer(function(input, output) {
  
 
   observeEvent(input$valider,{
+    
     listMovies <- read.csv("C:/Users/Aurel/OneDrive/Bureau/ECOLE/PROGRAMMATION/movieDataAnalysis/blockbuster-top_ten_movies_per_year_DFE.csv")
     
     lm10 <- listMovies %>% filter(year == input$year)
@@ -16,7 +17,6 @@ shinyServer(function(input, output) {
     lm10 <- lm10 %>% mutate(worldwide_gross = as.numeric(worldwide_gross))
     lm10 <- lm10 %>% select(worldwide_gross, length, imdb_rating)
     pca <-  PCA(X = lm10)
-    
     
     
     output$graph <- renderPlot({
