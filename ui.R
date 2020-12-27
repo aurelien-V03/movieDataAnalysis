@@ -5,7 +5,11 @@ library(shinythemes)
 shinyUI(fluidPage(
   titlePanel(title = "Box-office application"),
   sidebarLayout(
-    sidebarPanel(("Choisir une annee"),textInput("year","Entrer une annee",""),actionButton("valider","Valider")),
+    sidebarPanel(("Choisir une annee"),
+                 textInput("year","Entrer une annee",""),
+                 actionButton("valider","Valider")),
+    
+    
     mainPanel(("Resultat"),textOutput("yearToFind"), plotOutput('graph'))
   ),
   
