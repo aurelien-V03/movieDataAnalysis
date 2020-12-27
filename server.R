@@ -1,5 +1,6 @@
 library(shiny)
 library(FactoMineR)
+library(dplyr)
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output) {
   
@@ -9,7 +10,7 @@ shinyServer(function(input, output) {
   
   lm10 <- listMovies %>% filter(year == 2010)
   lm10 <- lm10 %>% mutate(worldwide_gross = sub('.','',worldwide_gross))
-  lm10 <- lm10 %>% mutate(worldwide_gross = str_replace_all(worldwide_gross,',',''))
+  lm10 <- lm10 %>% mutate(worldwide_gross = stringr::str_replace_all(worldwide_gross,',',''))
   lm10 <- lm10 %>% mutate(worldwide_gross = as.numeric(worldwide_gross))
   lm10 <- lm10 %>% select(worldwide_gross, length, imdb_rating)
   pca <-  PCA(X = lm10)
