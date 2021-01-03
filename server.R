@@ -6,7 +6,7 @@ library(dplyr)
 shinyServer(function(input, output) {
   
   # Importation des donnees au format CSV
-  listMovies <- read.csv("C:/Users/Aurel/OneDrive/Bureau/ECOLE/PROGRAMMATION/movieDataAnalysis/blockbuster-top_ten_movies_per_year_DFE.csv")
+  listMovies <- read.csv("blockbuster-top_ten_movies_per_year_DFE.csv")
   
   
   # Evenement : utilisateur valide l'ACP
@@ -18,11 +18,13 @@ shinyServer(function(input, output) {
     lm10 <- lm10 %>% mutate(worldwide_gross = stringr::str_replace_all(worldwide_gross,',',''))
     lm10 <- lm10 %>% mutate(worldwide_gross = as.numeric(worldwide_gross))
     lm10 <- lm10 %>% select(worldwide_gross, length, imdb_rating)
+    output$ACPtable <- renderDataTable(lm10)
+    
     pca <-  PCA(X = lm10, ncp = 2  , scale.unit = TRUE, graph = FALSE )
     
     
     # Graphe des individus ACP
-    output$graph <- renderPlot(
+    output$graphIndividusACP <- renderPlot(
       plot(pca,title="Graphe individus",choix="ind", axes = c(1,2))
       )
     # Graphe des variables ACP
@@ -39,7 +41,7 @@ shinyServer(function(input, output) {
   })
 
   # Evenement : utilisateur valide l'AFC
-    observeEvent(input$validerAFC,{
+    observeEvent(input$lancerAFC,{
       lm <- listMovies %>% select(Genre_1, Genre_2, Genre_3, year)
       lm <- lm %>% filter(!is.na(year))
       lm <- lm %>% mutate(year_2 = case_when(year >= 1975 & year < 1985 ~ 4, year >= 1985 & year < 1995 ~ 3, year >= 1995 & year < 2005 ~ 2,  year >= 2005 & year < 2015 ~ 1))
@@ -101,15 +103,12 @@ shinyServer(function(input, output) {
       lm$Musical[is.na(lm$Musical)] <- 0
       
       
-      lm <- lm %>% filter(year_2 >= 0) %>% group_by(year_2) %>% summarise(SciFiSum = sum(SciFi),FamiliySum = sum(Family), FantasySum = sum(Fantasy), ThrillerSum = sum(Thriller), ComedySum = sum(Comedy),adventureSum = sum(Adventure), AnimationSum = sum(Animation), CrimeSum = sum(Crime), RomanceSum = sum(Romance), DramaSum = sum(Drama), WarSum = sum(War), HistorySum = sum(History), MusicSum = sum(Music), ActionSum = sum(Action), WesternSum = sum(Western), HorrorSum = sum(Horror), SportSum = sum(Sport), MusicalSum = sum(Musical))
+      lm <- lm %>% filter(year_2 >= 0) %>% group_by(year_2) %>% summarise(SciFi = sum(SciFi),Familiy = sum(Family), Fantasy = sum(Fantasy), Thriller = sum(Thriller), Comedy = sum(Comedy),adventure = sum(Adventure), Animation = sum(Animation), Crime = sum(Crime), Romance = sum(Romance), Drama = sum(Drama), War = sum(War), History = sum(History), Music = sum(Music), Action = sum(Action), Western = sum(Western), Horror = sum(Horror), Sport = sum(Sport), Musical = sum(Musical))
+      output$AFCtable <- renderDataTable(lm)
       
       rs <- CA(lm)
       
-     
-      
     })
-  
- 
 })
 
 
