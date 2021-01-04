@@ -5,6 +5,16 @@ library(shinythemes)
 shinyUI(fluidPage(theme = shinytheme("cerulean"),
   titlePanel(title = "Box-office application"),
   navbarPage("Analyses",
+             tabPanel(icon("home"),
+                      mainPanel(
+                      fluidRow(
+                        column(width = 6),
+                        column(h2("Accueil"),width = 4)),
+                      fluidRow(
+                        column(width = 4),
+                        column(p("Bienvenue sur l'application",style="text-align:justify;color:black;background-color:lavender;padding:15px;border-radius:10px"),width = 8))
+                      
+                      )),
              tabPanel("ACP",
                       sidebarLayout(
                         sidebarPanel(
@@ -24,6 +34,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                 column(plotOutput('graphIndividusACP'), width = 6),
                                 column(plotOutput("grapVariableACP"),width = 6),
                           ),
+                          br(),
                           fluidRow(column(dataTableOutput("ACPtable"), width=12))
                         )
                       )
@@ -37,18 +48,19 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                         mainPanel(
                             fluidRow(column(h3("Resultat AFC",style="text-align:center"), width = 12)),
                             fluidRow(column(dataTableOutput("AFCtable"),width = 12)),
-                            
                             fluidRow(column(dataTableOutput("graphAFC"),width = 12))
                             
                             
                       )
                     ),
                   ),
-             tabPanel("Jeu de donnee",
+             tabPanel("Database",
+                      br(),
                       fluidRow(column(width=2),
                                column(
-                                 h4(p("Jeu de donnee 'blockbuster-top_ten_movies_per_year_DFE'",style="color:black;text-align:center")),
+                                 h4(p("Database 'blockbuster-top_ten_movies_per_year_DFE'",icon("database"),  style="color:black;text-align:center")),
                                  width=8,style="background-color:lavender;border-radius: 10px")),
+                      br(),
                       fluidRow(column(dataTableOutput("dataset") ,width=12))
                       )
              ),
