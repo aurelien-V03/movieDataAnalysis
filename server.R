@@ -8,6 +8,8 @@ shinyServer(function(input, output) {
   # Importation des donnees au format CSV
   listMovies <- read.csv("blockbuster-top_ten_movies_per_year_DFE.csv")
   
+  # display full dataset
+  output$dataset <- renderDataTable(listMovies)
   
   # Evenement : utilisateur valide l'ACP
   observeEvent(input$valider,{
@@ -18,14 +20,16 @@ shinyServer(function(input, output) {
     lm10 <- lm10 %>% mutate(worldwide_gross = stringr::str_replace_all(worldwide_gross,',',''))
     lm10 <- lm10 %>% mutate(worldwide_gross = as.numeric(worldwide_gross))
     lm10 <- lm10 %>% select(worldwide_gross, length, imdb_rating)
+    
+    #donnee de l'ACP
     output$ACPtable <- renderDataTable(lm10)
     
-    pca <-  PCA(X = lm10, ncp = 2  , scale.unit = TRUE, graph = FALSE )
+    pca <-  PCA(X = lm10, ncp = input$nbDim  , scale.unit = TRUE, graph = FALSE)
     
     
     # Graphe des individus ACP
     output$graphIndividusACP <- renderPlot(
-      plot(pca,title="Graphe individus",choix="ind", axes = c(1,2))
+      plot(pca,title="Graphe des individus",choix="ind", axes = c(1,2))
       )
     # Graphe des variables ACP
     output$grapVariableACP <- renderPlot(
@@ -107,6 +111,10 @@ shinyServer(function(input, output) {
       output$AFCtable <- renderDataTable(lm)
       
       rs <- CA(lm)
+      
+      output$graphAFC <- renderPlot(
+        plot(rs, axes = c(1,2),choix ="CA")
+      )
       
     })
 })
