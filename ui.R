@@ -52,9 +52,10 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                         ),
                         mainPanel(
                             fluidRow(column(h3("Resultat AFC",style="text-align:center"), width = 12)),
+                            fluidRow(column(plotOutput("graphAFCcol"),width = 6)),
+                            br(),
                             fluidRow(column(dataTableOutput("AFCtable"),width = 12)),
-                            fluidRow(column(dataTableOutput("graphAFCcol"),width = 12))
-                            
+
                             
                       )
                     ),

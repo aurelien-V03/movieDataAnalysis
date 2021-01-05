@@ -112,11 +112,12 @@ shinyServer(function(input, output) {
       
       rs <- CA(lm)
       
-      output$graphAFCcol <- renderPlot(
+      output$graphAFCcol <- renderPlot({
         #plot(rs, axes = c(1,2),choix ="CA")
-        plot(rs, invisible = c("col","col.sup"))
-        
-      )
+        plot(rs,title = "AFC")
+      }, 
+      height = 480,
+      width = 480)
       
     })
 })
