@@ -12,13 +12,18 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                         column(h2("Accueil"),width = 4)),
                       fluidRow(
                         column(width = 4),
-                        column(p("Bienvenue sur l'application",style="text-align:justify;color:black;background-color:lavender;padding:15px;border-radius:10px"),width = 8))
+                        column(p("Bienvenue sur l'application Box-office Application !",style="text-align:justify;color:black;background-color:lavender;padding:15px;border-radius:10px"),width = 8)),
+                      fluidRow(
+                        column(width=4),
+                        column(p("Cette application a ete developpe par Aurelien Vallet et Akram derdaki dans le cadre du master miage. Ce site met a disposition differentes methodes d'analyses de donnees comme l'analyse en composantes
+                                 principales (ACP) ou l'analyse factorielle des correspondances (AFC).",style="text-align:justify;color:black;background-color:lavender;padding:15px;border-radius:10px"),width = 8)
+                      )
                       
                       )),
              tabPanel("ACP",
                       sidebarLayout(
                         sidebarPanel(
-                          h6("ACP - 10 plus gros score au box-office", style="text-align:center"),br(),
+                          h4("ACP - 10 plus gros score au box-office", style="text-align:center"),br(),
                           textInput("year","Entrer une annee (entre 1975-2014)",""),
                           br(),
                           sliderInput("nbDim",p("Nombre dimension utilisee",style="color:black;text-align:center"),
@@ -48,7 +53,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                         mainPanel(
                             fluidRow(column(h3("Resultat AFC",style="text-align:center"), width = 12)),
                             fluidRow(column(dataTableOutput("AFCtable"),width = 12)),
-                            fluidRow(column(dataTableOutput("graphAFC"),width = 12))
+                            fluidRow(column(dataTableOutput("graphAFCcol"),width = 12))
                             
                             
                       )
@@ -61,7 +66,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                  h4(p("Database 'blockbuster-top_ten_movies_per_year_DFE'",icon("database"),  style="color:black;text-align:center")),
                                  width=8,style="background-color:lavender;border-radius: 10px")),
                       br(),
-                      fluidRow(column(dataTableOutput("dataset") ,width=12))
+                      fluidRow(column(p("ok"), dataTableOutput("dataset") ,width=12))
                       )
              ),
 ))
