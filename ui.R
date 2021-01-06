@@ -28,13 +28,13 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                           br(),
                           sliderInput("nbDim",p("Nombre dimension utilisee",style="color:black;text-align:center"),
                                       value=1,
-                                      min = 1 ,
+                                      min = 2 ,
                                       max = 10 ,
                                       step=1),
+                          checkboxGroupInput("acpClumms",p("Variables de l'ACP",style="color:coral"),choices = c("worldwide_gross"=1,"length"=2,"imdb_rating"=3),selected = c("Projected population"=1,"Thefts"=2,"Traffic accidents"=3,"Homicides"=4,"School deserters"=5,"Sports venues"=6,"Extortions"=7)),
                           actionButton("valider","Valider ACP"),
                         ),
                         mainPanel(
-                          fluidRow(column(h2(textOutput("yearToFind")),width = 12)),
                           fluidRow(
                                 column(plotOutput('graphIndividusACP'), width = 6),
                                 column(plotOutput("grapVariableACP"),width = 6),
@@ -67,7 +67,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                  h4(p("Database 'blockbuster-top_ten_movies_per_year_DFE'",icon("database"),  style="color:black;text-align:center")),
                                  width=8,style="background-color:lavender;border-radius: 10px")),
                       br(),
-                      fluidRow(column(p("ok"), dataTableOutput("dataset") ,width=12))
+                      fluidRow(column( dataTableOutput("dataset") ,width=12))
                       )
              ),
 ))

@@ -13,24 +13,46 @@ shinyServer(function(input, output) {
   
   # Evenement : utilisateur valide l'ACP
   observeEvent(input$valider,{
-    
-
+     
     lm10 <- listMovies %>% filter(year == input$year)
     lm10 <- lm10 %>% mutate(worldwide_gross = sub('.','',worldwide_gross))
     lm10 <- lm10 %>% mutate(worldwide_gross = stringr::str_replace_all(worldwide_gross,',',''))
     lm10 <- lm10 %>% mutate(worldwide_gross = as.numeric(worldwide_gross))
+    
     lm10 <- lm10 %>% select(worldwide_gross, length, imdb_rating, title)
+    
+    
+    
+    
+    nbVar <- 1
+    l <- c()
+    for (col in input$acpClumms) {
+      l <- c(l,as.numeric(col))
+      nbVar <- nbVar + 1
+    }
+    
+      l <- c(l,4)
+      lm10 <- lm10 %>% select(l)
+      print("Liste des colonnes")
+      print(l)
+      print("Nombre de variable : ")
+      print(nbVar)
+     
+    
+  
+   
     
     #donnee de l'ACP
     output$ACPtable <- renderDataTable(lm10)
     
-    pca <-  PCA(X = lm10, ncp = input$nbDim  , quali.sup = 4, scale.unit = TRUE, graph = FALSE)
-    
+  
+    pca <-  PCA(X = lm10, ncp = input$nbDim  , quali.sup = nbVar, scale.unit = TRUE, graph = FALSE)
     
     # Graphe des individus ACP
     output$graphIndividusACP <- renderPlot(
-      plot(pca,title="Graphe des individus",choix="ind", axes = c(1,2))
+      plot(pca,title = "Graphe des individus" ,choix="ind", axes = c(1,2))
       )
+    
     # Graphe des variables ACP
     output$grapVariableACP <- renderPlot(
       plot(
