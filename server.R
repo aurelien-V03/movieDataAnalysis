@@ -14,55 +14,78 @@ shinyServer(function(input, output) {
   # Evenement : utilisateur valide l'ACP
   observeEvent(input$valider,{
      
-    lm10 <- listMovies %>% filter(year == input$year)
-    lm10 <- lm10 %>% mutate(worldwide_gross = sub('.','',worldwide_gross))
-    lm10 <- lm10 %>% mutate(worldwide_gross = stringr::str_replace_all(worldwide_gross,',',''))
-    lm10 <- lm10 %>% mutate(worldwide_gross = as.numeric(worldwide_gross))
+  
     
-    lm10 <- lm10 %>% select(worldwide_gross, length, imdb_rating, title)
+    # Si on a au moins 2 variable selectionnee
+    if(length(input$acpClumms) >=2)
+    {
+      # si la date est comrpise entre 1975 et 2014
+      if(input$year >= 1975 & input$year <= 2014)
+      {
+        lm10 <- listMovies %>% filter(year == input$year)
+        lm10 <- lm10 %>% mutate(worldwide_gross = sub('.','',worldwide_gross))
+        lm10 <- lm10 %>% mutate(worldwide_gross = stringr::str_replace_all(worldwide_gross,',',''))
+        lm10 <- lm10 %>% mutate(worldwide_gross = as.numeric(worldwide_gross))
+        
+        lm10 <- lm10 %>% select(worldwide_gross, length, imdb_rating, rt_audience_score, audience_freshness, title)
+        
+        
+        # nombre de variables que l'on va prendre      
+        nbVar <- 1
+        # liste des index des variables
+        index_variables <- c()
+        # Pour chaque valeur cochee
+        for (col in input$acpClumms) {
+          index_variables <- c(index_variables,as.numeric(col))
+          nbVar <- nbVar + 1
+        }
+        
+        
+        index_variables <- c(index_variables,6)
+        lm10 <- lm10 %>% select(index_variables)
+        print("Liste des colonnes")
+        print(index_variables)
+        print("Nombre de variable : ")
+        print(nbVar)
+        
+        
+        #donnee de l'ACP
+        output$ACPtable <- renderDataTable(lm10, options = list(
+          pageLength = 10
+          
+        ))
+        
+        
+        pca <-  PCA(X = lm10, ncp = input$nbDim  , quali.sup = nbVar, scale.unit = TRUE, graph = FALSE)
+        
+        # Graphe des individus ACP
+        output$graphIndividusACP <- renderPlot(
+          plot(pca,title = "Graphe des individus" ,choix="ind", axes = c(1,2))
+        )
+        
+        # Graphe des variables ACP
+        output$grapVariableACP <- renderPlot(
+          plot(
+            pca,title="Graphe des variables",choix = "var", axes=1:2
+          )
+        )
+        output$ACPtableTile <- renderText(
+          {paste("Resultat pour annee : ", input$year)
+            
+          })
+      }
+      else{
+        showNotification("Attention la date doit etre comprise entre 1975 et 2014 !", type = "error")
+      }
+      
+          
+    }
+    else{
     
-    
-    
-    
-    nbVar <- 1
-    l <- c()
-    for (col in input$acpClumms) {
-      l <- c(l,as.numeric(col))
-      nbVar <- nbVar + 1
+      showNotification("Attention vous devez selectionner 2 variables au minimum !", type = "error")
     }
     
-      l <- c(l,4)
-      lm10 <- lm10 %>% select(l)
-      print("Liste des colonnes")
-      print(l)
-      print("Nombre de variable : ")
-      print(nbVar)
      
-    
-  
-   
-    
-    #donnee de l'ACP
-    output$ACPtable <- renderDataTable(lm10)
-    
-  
-    pca <-  PCA(X = lm10, ncp = input$nbDim  , quali.sup = nbVar, scale.unit = TRUE, graph = FALSE)
-    
-    # Graphe des individus ACP
-    output$graphIndividusACP <- renderPlot(
-      plot(pca,title = "Graphe des individus" ,choix="ind", axes = c(1,2))
-      )
-    
-    # Graphe des variables ACP
-    output$grapVariableACP <- renderPlot(
-      plot(
-        pca,title="Graphe des variables",choix = "var", axes=1:2
-      )
-    )
-    output$yearToFind <- renderText(
-      {paste("Resultat pour annee : ", input$year, "( ", input$nbDim  ," dimension )")
-        
-        })
     
   })
 
@@ -136,7 +159,7 @@ shinyServer(function(input, output) {
       
       output$graphAFCcol <- renderPlot({
         #plot(rs, axes = c(1,2),choix ="CA")
-        plot(rs,title = "AFC")
+        plot(rs,title = "Analyse factorielle des correspondances AFC")
       }, 
       height = 480,
       width = 480)

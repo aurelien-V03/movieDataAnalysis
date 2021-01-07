@@ -3,6 +3,12 @@ library(shinythemes)
 
 # Define UI for application that plots random distributions 
 shinyUI(fluidPage(theme = shinytheme("cerulean"),
+                  tags$head(
+                    tags$style(
+                      HTML(".shiny-notification {
+                           position:fixed;
+                           top: calc(50%);
+                           left: calc(50%);}"))),
   titlePanel(title = "Box-office application"),
   navbarPage("Analyses",
              tabPanel(icon("home"),
@@ -31,7 +37,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                       min = 2 ,
                                       max = 10 ,
                                       step=1),
-                          checkboxGroupInput("acpClumms",p("Variables de l'ACP",style="color:coral"),choices = c("worldwide_gross"=1,"length"=2,"imdb_rating"=3),selected = c("Projected population"=1,"Thefts"=2,"Traffic accidents"=3,"Homicides"=4,"School deserters"=5,"Sports venues"=6,"Extortions"=7)),
+                          checkboxGroupInput("acpClumms",p("Variables de l'ACP",style="color:coral"),choices = c("worldwide_gross"=1,"length"=2,"imdb_rating"=3, "rt_audience_score" = 4, "audience_freshness" = 5),selected = c("Projected population"=1,"Thefts"=2,"Traffic accidents"=3,"Homicides"=4,"School deserters"=5,"Sports venues"=6,"Extortions"=7)),
                           actionButton("valider","Valider ACP"),
                         ),
                         mainPanel(
@@ -40,6 +46,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                 column(plotOutput("grapVariableACP"),width = 6),
                           ),
                           br(),
+                          fluidRow(column(h2(textOutput("ACPtableTile")),width=12)),  
                           fluidRow(column(dataTableOutput("ACPtable"), width=12))
                         )
                       )
