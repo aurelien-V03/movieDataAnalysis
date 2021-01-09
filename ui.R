@@ -24,7 +24,6 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                         column(p("Cette application a ete developpe par Aurelien Vallet et Akram derdaki dans le cadre du master miage. Ce site met a disposition differentes methodes d'analyses de donnees comme l'analyse en composantes
                                  principales (ACP) ou l'analyse factorielle des correspondances (AFC).",style="text-align:justify;color:black;background-color:lavender;padding:15px;border-radius:10px"),width = 8)
                       )
-                      
                       )),
              tabPanel("ACP",
                       sidebarLayout(
@@ -55,19 +54,16 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                       sidebarLayout(
                         sidebarPanel(
                           actionButton("lancerAFC","Lancer AFC")
-                          
                         ),
                         mainPanel(
                             fluidRow(column(h3("Resultat AFC",style="text-align:center"), width = 12)),
                             fluidRow(column(plotOutput("graphAFCcol"),width = 6)),
                             br(),
                             fluidRow(column(dataTableOutput("AFCtable"),width = 12)),
-
-                            
                       )
                     ),
                   ),
-             tabPanel("Database",
+             tabPanel("Base de donnee",
                       br(),
                       fluidRow(column(width=2),
                                column(

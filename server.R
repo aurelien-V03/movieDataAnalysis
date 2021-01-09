@@ -8,14 +8,12 @@ shinyServer(function(input, output) {
   # Importation des donnees au format CSV
   listMovies <- read.csv("blockbuster-top_ten_movies_per_year_DFE.csv")
   
-  # display full dataset
+  # donnees pour la rubrique "Base de donnee"
   output$dataset <- renderDataTable(listMovies)
   
   # Evenement : utilisateur valide l'ACP
   observeEvent(input$valider,{
      
-  
-    
     # Si on a au moins 2 variable selectionnee
     if(length(input$acpClumms) >=2)
     {
@@ -23,10 +21,13 @@ shinyServer(function(input, output) {
       if(input$year >= 1975 & input$year <= 2014)
       {
         lm10 <- listMovies %>% filter(year == input$year)
+        
+        # transformation de la colonne worldwide_gross en donnee quantitative exploitable
         lm10 <- lm10 %>% mutate(worldwide_gross = sub('.','',worldwide_gross))
         lm10 <- lm10 %>% mutate(worldwide_gross = stringr::str_replace_all(worldwide_gross,',',''))
         lm10 <- lm10 %>% mutate(worldwide_gross = as.numeric(worldwide_gross))
         
+        # selection des colonnes quantitatives disponibles pour l'ACP
         lm10 <- lm10 %>% select(worldwide_gross, length, imdb_rating, rt_audience_score, audience_freshness, title)
         
         
@@ -40,22 +41,15 @@ shinyServer(function(input, output) {
           nbVar <- nbVar + 1
         }
         
-        
         index_variables <- c(index_variables,6)
+        
+        # filtrage des colonnes selectionne
         lm10 <- lm10 %>% select(index_variables)
-        print("Liste des colonnes")
-        print(index_variables)
-        print("Nombre de variable : ")
-        print(nbVar)
-        
-        
+       
         #donnee de l'ACP
-        output$ACPtable <- renderDataTable(lm10, options = list(
-          pageLength = 10
-          
-        ))
+        output$ACPtable <- renderDataTable(lm10, options = list(pageLength = 10))
         
-        
+        # ACP
         pca <-  PCA(X = lm10, ncp = input$nbDim  , quali.sup = nbVar, scale.unit = TRUE, graph = FALSE)
         
         # Graphe des individus ACP
@@ -69,36 +63,38 @@ shinyServer(function(input, output) {
             pca,title="Graphe des variables",choix = "var", axes=1:2
           )
         )
+        
+        # titre de l'ACP a afficher
         output$ACPtableTile <- renderText(
           {paste("Resultat pour annee : ", input$year)
-            
           })
       }
       else{
         showNotification("Attention la date doit etre comprise entre 1975 et 2014 !", type = "error")
       }
-      
-          
     }
     else{
-    
       showNotification("Attention vous devez selectionner 2 variables au minimum !", type = "error")
     }
-    
-     
-    
   })
-
   # Evenement : utilisateur valide l'AFC
     observeEvent(input$lancerAFC,{
+      
+      # Selection des genres pour chaque film
       lm <- listMovies %>% select(Genre_1, Genre_2, Genre_3, year)
+      # Filtrage des annee valide
       lm <- lm %>% filter(!is.na(year))
+      
+      # ajout des intervalles de temps ( [1975:1984] = 4 [1985:1994] = 3 [1995:2004] = 2 [2005:2014] = 1)
       lm <- lm %>% mutate(year_2 = case_when(year >= 1975 & year < 1985 ~ 4, year >= 1985 & year < 1995 ~ 3, year >= 1995 & year < 2005 ~ 2,  year >= 2005 & year < 2015 ~ 1))
       
+      #Ajout de 18 colonnes de genre pour chaque film (1 = possede ce genre / 0 = ne possede pas)
       lm <- lm %>% mutate(SciFi = case_when(Genre_1 == 'Sci-Fi' | Genre_2 == 'Sci-Fi' | Genre_3 == 'Sci-Fi ' ~ 1 ))
       lm$SciFi[is.na(lm$SciFi)] <- 0
+      
       lm <- lm %>% mutate(Family = case_when(Genre_1 == 'Family' | Genre_2 == 'Family' | Genre_3 == 'Family ' ~ 1))
       lm$Family[is.na(lm$Family)] <- 0
+      
       lm <- lm %>% mutate(Fantasy = case_when(Genre_1 == 'Fantasy' | Genre_2 == 'Fantasy' | Genre_3 == 'Fantasy ' ~ 1))
       lm$Fantasy[is.na(lm$Fantasy)] <- 0
       
@@ -151,19 +147,21 @@ shinyServer(function(input, output) {
       lm <- lm %>% mutate(Musical = case_when(Genre_1 == 'Musical' | Genre_2 == 'Musical' | Genre_3 == 'Musical' ~ 1)) 
       lm$Musical[is.na(lm$Musical)] <- 0
       
-      
+      # Group by par intervalle d'aneee et cumul de chaque genre
       lm <- lm %>% filter(year_2 >= 0) %>% group_by(year_2) %>% summarise(SciFi = sum(SciFi),Familiy = sum(Family), Fantasy = sum(Fantasy), Thriller = sum(Thriller), Comedy = sum(Comedy),adventure = sum(Adventure), Animation = sum(Animation), Crime = sum(Crime), Romance = sum(Romance), Drama = sum(Drama), War = sum(War), History = sum(History), Music = sum(Music), Action = sum(Action), Western = sum(Western), Horror = sum(Horror), Sport = sum(Sport), Musical = sum(Musical))
+      
+      # Dataset de l'AFC
       output$AFCtable <- renderDataTable(lm)
       
+      # AFC
       rs <- CA(lm)
       
+      # Graphe de l'AFC
       output$graphAFCcol <- renderPlot({
-        #plot(rs, axes = c(1,2),choix ="CA")
         plot(rs,title = "Analyse factorielle des correspondances AFC")
       }, 
       height = 480,
       width = 480)
-      
     })
 })
 
